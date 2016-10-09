@@ -5,7 +5,7 @@ __author__ = 'Issac Yang'
 
 import asyncio, logging
 
-import aiomysql
+import pymysql
 
 def log(sql,args=()):
 	logging.info('SQL:%s' %sql)
@@ -65,7 +65,7 @@ def create_args_string(num):
 class  Field(object):
 	def __init__(self, name,column_type,primary_key,default):
 		self.name = name
-		self.column_type = colimn_type
+		self.column_type = column_type
 		self.primary_key = primary_key
 		self.default = default
 	
@@ -106,14 +106,14 @@ class ModelMetaclass(type):
 		if name == 'Model':
 			return type.__new__(cls,name,bases,attrs)
 		tablename = attrs.get('__table__',None)	 or name
-		logging,info('found model: %s(table:%s)' %(name,tablename))
+		logging.info('found model: %s(table:%s)' %(name,tablename))
 		mappings = dict()
 		fields = []
 		primaryKey = None
 		for k,v in attrs.items():
 			if isinstance(v,Field):
 				logging.info(' found mapping: %s ==> %s' %(k,v))
-				mapping[k]	 =v
+				mappings[k]	 =v
 				if v.primary_key:
 					# 找到主键
 					if primaryKey:
@@ -123,8 +123,8 @@ class ModelMetaclass(type):
 					fields.append(k)		
 		if not primaryKey:
 			raise StandardError('Primary key not found.')			
-		for k in mapping.keys()	:
-			atts.pop(k)
+		for k in mappings.keys()	:
+			attrs.pop(k)
 		escaped_fields = list(map(lambda f :'`%s`' % f,fields))	
 		attrs['__mappings__'] = mappings # 保存属性和列的映射关系
 		attrs['__table__'] = tablename
