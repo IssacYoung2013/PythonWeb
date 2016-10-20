@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 test
 # _*_ coding:utf-8 _*_
 import orm 
 import asyncio
